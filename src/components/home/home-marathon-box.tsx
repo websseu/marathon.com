@@ -1,20 +1,12 @@
 import React from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { dday, getStatusBadgeStyle } from '@/lib/utils'
-import { Badge } from '../ui/badge'
 import Image from 'next/image'
-import {
-  BookMarked,
-  Calendar,
-  Clock,
-  MapPin,
-  Medal,
-  Star,
-  TrendingUp,
-  Users,
-} from 'lucide-react'
+import Link from 'next/link'
+import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Marathon } from '@/lib/type'
+import { getDday, getDdayStyle, getStatusBadgeStyle } from '@/lib/utils'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Award, Calendar, Clock, MapPin, Medal, Star, TrendingUp, Users } from 'lucide-react'
 
 interface Props {
   marathons: Marathon[]
@@ -25,26 +17,15 @@ export default function HomeMarathonBox({ marathons }: Props) {
     <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
       {marathons.length > 0 ? (
         marathons.map((marathon: Marathon) => (
-          <Card
-            key={marathon._id}
-            className='border-gray-100 hover:border-blue-600 transition-all'
-          >
+          <Card key={marathon._id} className='hover:shadow-lg transition-shadow'>
             <CardHeader>
               <CardTitle className='text-xl font-gmarket text-gray-900 truncate whitespace-nowrap'>
                 {marathon.name}
               </CardTitle>
               <div className='flex items-center gap-1 mb-2'>
-                <Badge className={getStatusBadgeStyle(marathon.status)}>
-                  {marathon.status}
-                </Badge>
-                <Badge
-                  className={
-                    dday(marathon.startDate) === '종료'
-                      ? 'border-gray-400 bg-transparent text-gray-500'
-                      : 'border-red-600 bg-transparent text-red-600'
-                  }
-                >
-                  {dday(marathon.startDate)}
+                <Badge className={getStatusBadgeStyle(marathon.status)}>{marathon.status}</Badge>
+                <Badge className={getDdayStyle(marathon.startDate)}>
+                  {getDday(marathon.startDate)}
                 </Badge>
               </div>
             </CardHeader>
@@ -67,9 +48,7 @@ export default function HomeMarathonBox({ marathons }: Props) {
                   </div>
                   <div className='flex items-center gap-2 text-sm text-gray-600'>
                     <MapPin className='h-4 w-4 flex-shrink-0' />
-                    <span className='truncate whitespace-nowrap'>
-                      {marathon.location}
-                    </span>
+                    <span className='truncate whitespace-nowrap'>{marathon.location}</span>
                   </div>
                   <div className='flex items-center gap-2 text-sm text-gray-600'>
                     <Clock className='h-4 w-4 flex-shrink-0' />
@@ -100,11 +79,7 @@ export default function HomeMarathonBox({ marathons }: Props) {
                   </div>
                   <div className='flex flex-wrap gap-1'>
                     {marathon.highlights.map((highlight: string) => (
-                      <Badge
-                        key={highlight}
-                        variant='outline'
-                        className='text-xs'
-                      >
+                      <Badge key={highlight} variant='outline' className='text-xs'>
                         {highlight}
                       </Badge>
                     ))}
@@ -114,13 +89,14 @@ export default function HomeMarathonBox({ marathons }: Props) {
 
               {/* 액션 버튼 */}
               <div className='flex gap-2 pt-2'>
-                <Button size='sm' className='flex-1'>
-                  <TrendingUp className='h-4 w-4 mr-1' />
-                  상세정보
-                </Button>
+                <Link href={`/marathon/${marathon.slug}`} className='flex-1'>
+                  <Button size='sm' className='w-full'>
+                    <TrendingUp className='h-4 w-4' />
+                    상세정보
+                  </Button>
+                </Link>
                 <Button size='sm' variant='outline'>
-                  <BookMarked className='h-4 w-4' />
-                  {marathon.numLikes}
+                  <Award className='h-4 w-4' />
                 </Button>
               </div>
             </CardContent>

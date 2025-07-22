@@ -40,6 +40,7 @@ export type IMarathonUpdateInput = z.infer<typeof MarathonUpdateSchema>
 export interface Marathon {
   _id: string
   name: string
+  slug: string
   status: string
   startDate: string
   regDate: string

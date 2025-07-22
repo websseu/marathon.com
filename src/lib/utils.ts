@@ -34,7 +34,7 @@ export function getDayFormatted(date: Date = new Date()): string {
 }
 
 // 디데이 계산
-export const dday = (startDate: string) => {
+export const getDday = (startDate: string) => {
   const eventDate = new Date(startDate.substring(0, 10))
   const today = new Date()
   eventDate.setHours(0, 0, 0, 0)
@@ -46,6 +46,11 @@ export const dday = (startDate: string) => {
   if (diffDays > 0) return `D-${diffDays}`
   return '종료'
 }
+
+export const getDdayStyle = (startDate: string) =>
+  getDday(startDate) === '종료'
+    ? 'border-gray-400 bg-transparent text-gray-500'
+    : 'border-red-600 bg-transparent text-red-600'
 
 export const getStatusBadgeStyle = (status: string) => {
   switch (status) {

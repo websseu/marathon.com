@@ -3,6 +3,7 @@ import { Schema, Document, model, models } from 'mongoose'
 export interface IMarathon extends Document {
   status: string
   name: string
+  slug: string
   description: string
   startDate: string
   regDate: string
@@ -25,6 +26,7 @@ const MarathonSchema = new Schema<IMarathon>(
   {
     status: { type: String, enum: ['접수중', '접수마감', '접수대기'] },
     name: { type: String, required: true, trim: true },
+    slug: { type: String, required: true, unique: true, trim: true },
     description: { type: String, trim: true },
     startDate: { type: String },
     regDate: { type: String },

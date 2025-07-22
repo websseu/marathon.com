@@ -105,9 +105,7 @@ export default function DialogMarathonDetail({
             <Trophy className='h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>대회명:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.name}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.name}</span>
             </div>
           </div>
 
@@ -119,10 +117,7 @@ export default function DialogMarathonDetail({
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>상태:</span>
               <span className='ml-2'>
-                <Badge
-                  variant={statusBadge.variant}
-                  className={statusBadge.className}
-                >
+                <Badge variant={statusBadge.variant} className={statusBadge.className}>
                   {marathon.status}
                 </Badge>
               </span>
@@ -149,23 +144,20 @@ export default function DialogMarathonDetail({
                 <Calendar className='h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0' />
                 <div className='min-w-0 flex-1'>
                   <span className='font-medium text-gray-700'>접수 기간:</span>
-                  <span className='ml-2 text-gray-900 break-words'>
-                    {marathon.regDate}
-                  </span>
+                  <span className='ml-2 text-gray-900 break-words'>{marathon.regDate}</span>
                 </div>
               </div>
-              <Separator />
             </>
           )}
+
+          <Separator />
 
           {/* 장소 */}
           <div className='flex items-start gap-2'>
             <MapPin className='h-4 w-4 text-red-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>장소:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.location}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.location}</span>
             </div>
           </div>
 
@@ -176,9 +168,7 @@ export default function DialogMarathonDetail({
             <Users className='h-4 w-4 text-green-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>규모:</span>
-              <span className='ml-2 text-gray-900'>
-                {marathon.scale.toLocaleString()}명
-              </span>
+              <span className='ml-2 text-gray-900'>{marathon.scale.toLocaleString()}명</span>
             </div>
           </div>
 
@@ -189,9 +179,7 @@ export default function DialogMarathonDetail({
             <Building className='h-4 w-4 text-indigo-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>주최자:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.organizer}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.organizer}</span>
             </div>
           </div>
 
@@ -204,23 +192,20 @@ export default function DialogMarathonDetail({
                 <Heart className='h-4 w-4 text-pink-600 mt-0.5 flex-shrink-0' />
                 <div className='min-w-0 flex-1'>
                   <span className='font-medium text-gray-700'>스폰서:</span>
-                  <span className='ml-2 text-gray-900 break-words'>
-                    {marathon.sponsor}
-                  </span>
+                  <span className='ml-2 text-gray-900 break-words'>{marathon.sponsor}</span>
                 </div>
               </div>
-              <Separator />
             </>
           )}
+
+          <Separator />
 
           {/* 코스 */}
           <div className='flex items-start gap-2'>
             <Route className='h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>코스:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.courses.join(', ')}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.courses.join(', ')}</span>
             </div>
           </div>
 
@@ -256,18 +241,17 @@ export default function DialogMarathonDetail({
                   </div>
                 </div>
               </div>
-              <Separator />
             </>
           )}
+
+          <Separator />
 
           {/* 조회수 */}
           <div className='flex items-start gap-2'>
             <Eye className='h-4 w-4 text-gray-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>조회수:</span>
-              <span className='ml-2 text-gray-900'>
-                {marathon.numViews.toLocaleString()}회
-              </span>
+              <span className='ml-2 text-gray-900'>{marathon.numViews.toLocaleString()}회</span>
             </div>
           </div>
 
@@ -278,9 +262,7 @@ export default function DialogMarathonDetail({
             <Heart className='h-4 w-4 text-red-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>좋아요:</span>
-              <span className='ml-2 text-gray-900'>
-                {marathon.numLikes.toLocaleString()}개
-              </span>
+              <span className='ml-2 text-gray-900'>{marathon.numLikes.toLocaleString()}개</span>
             </div>
           </div>
 
@@ -291,9 +273,7 @@ export default function DialogMarathonDetail({
             <Calendar className='h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>등록일:</span>
-              <span className='ml-2 text-gray-900'>
-                {formatDateTime(marathon.createdAt)}
-              </span>
+              <span className='ml-2 text-gray-900'>{formatDateTime(marathon.createdAt)}</span>
             </div>
           </div>
         </div>

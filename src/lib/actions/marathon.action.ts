@@ -54,9 +54,7 @@ export async function getAllMarathons() {
     await connectToDatabase()
 
     // 모든 마라톤 대회 조회 (발행된 것만)
-    const marathons = await Marathon.find({ isPublished: true })
-      .sort({ createdAt: -1 })
-      .lean()
+    const marathons = await Marathon.find({ isPublished: true }).sort({ createdAt: -1 }).lean()
 
     // JSON 직렬화
     const serialized = JSON.parse(JSON.stringify(marathons))
@@ -74,74 +72,6 @@ export async function getAllMarathons() {
     }
   }
 }
-
-// 마라톤 대회 목록 조회(페이지, 검색)
-// export async function getAllMarathonsPage(
-//   page = 1,
-//   limit = 10,
-//   searchQuery?: string,
-//   status?: string
-// ) {
-//   try {
-//     await connectToDatabase()
-
-//     const skip = (page - 1) * limit
-
-//     // 검색 조건 설정
-//     const searchCondition: {
-//       isPublished: boolean
-//       $or?: Array<Record<string, { $regex: string; $options: string }>>
-//       status?: string
-//     } = { isPublished: true }
-
-//     if (searchQuery) {
-//       searchCondition.$or = [
-//         { name: { $regex: searchQuery, $options: 'i' } },
-//         { description: { $regex: searchQuery, $options: 'i' } },
-//         { location: { $regex: searchQuery, $options: 'i' } },
-//         { organizer: { $regex: searchQuery, $options: 'i' } },
-//       ]
-//     }
-
-//     if (status) {
-//       searchCondition.status = status
-//     }
-
-//     // 총 개수 조회
-//     const totalCount = await Marathon.countDocuments(searchCondition)
-
-//     // 페이지네이션된 데이터 조회
-//     const marathons = await Marathon.find(searchCondition)
-//       .sort({ createdAt: -1 })
-//       .skip(skip)
-//       .limit(limit)
-//       .lean()
-
-//     // 페이지네이션 정보 계산
-//     const totalPages = Math.ceil(totalCount / limit)
-//     const hasNextPage = page < totalPages
-//     const hasPrevPage = page > 1
-
-//     return {
-//       success: true,
-//       marathons: JSON.parse(JSON.stringify(marathons)),
-//       pagination: {
-//         currentPage: page,
-//         totalPages,
-//         totalCount,
-//         limit,
-//         hasNextPage,
-//         hasPrevPage,
-//       },
-//     }
-//   } catch (error) {
-//     console.error('마라톤 대회 조회 오류:', error)
-//     return {
-//       success: false,
-//       error: '마라톤 대회 데이터를 불러오는데 실패했습니다.',
-//     }
-//   }
-// }
 
 export async function getAllMarathonsPage(
   page = 1,
@@ -280,11 +210,36 @@ export async function getMarathonById(marathonId: string) {
   }
 }
 
+// 마라톤 대회 슬러그로 상세 조회
+export async function getMarathonBySlug(slug: string) {
+  try {
+    await connectToDatabase()
+
+    // slug는 unique라고 가정
+    const marathon = await Marathon.findOne({ slug, isPublished: true }).lean()
+
+    if (!marathon) {
+      return {
+        success: false,
+        error: '마라톤 대회를 찾을 수 없습니다.',
+      }
+    }
+
+    return {
+      success: true,
+      marathon: JSON.parse(JSON.stringify(marathon)),
+    }
+  } catch (error) {
+    console.error('마라톤 대회 슬러그 조회 오류:', error)
+    return {
+      success: false,
+      error: '마라톤 대회 정보를 불러오는데 실패했습니다.',
+    }
+  }
+}
+
 // 마라톤 대회 수정
-export async function updateMarathon(
-  marathonId: string,
-  updateData: IMarathonUpdateInput
-) {
+export async function updateMarathon(marathonId: string, updateData: IMarathonUpdateInput) {
   try {
     await connectToDatabase()
 
@@ -410,11 +365,7 @@ export async function incrementViews(marathonId: string) {
   try {
     await connectToDatabase()
 
-    await Marathon.findByIdAndUpdate(
-      marathonId,
-      { $inc: { numViews: 1 } },
-      { new: true }
-    )
+    await Marathon.findByIdAndUpdate(marathonId, { $inc: { numViews: 1 } }, { new: true })
 
     return { success: true }
   } catch (error) {
