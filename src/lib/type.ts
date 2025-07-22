@@ -35,3 +35,19 @@ export type IMarathonInput = z.infer<typeof MarathonInputSchema>
 
 // 마라톤 대회 수정
 export type IMarathonUpdateInput = z.infer<typeof MarathonUpdateSchema>
+
+// 마라톤 타입
+export interface Marathon {
+  _id: string
+  name: string
+  status: string
+  startDate: string
+  regDate: string
+  location: string
+  courses: string[]
+  scale: number
+  description: string
+  highlights: string[]
+  image: string
+  numLikes: number
+}

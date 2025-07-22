@@ -50,12 +50,38 @@ export const dday = (startDate: string) => {
 export const getStatusBadgeStyle = (status: string) => {
   switch (status) {
     case '접수중':
-      return 'border-red-700 bg-red-700 text-white'
+      return 'text-green-600 border-green-600 bg-transparent'
     case '접수대기':
-      return 'border-blue-600 bg-blue-600 text-white'
+      return 'text-blue-600 border-blue-600 bg-transparent'
     case '접수마감':
-      return 'border-green-600 bg-green-50 text-green-600'
+      return 'text-red-600 border-red-600 bg-transparent'
     default:
       return 'border-gray-400 bg-transparent text-gray-500'
+  }
+}
+
+// 상태별 배지 스타일
+export const getStatusBadge = (status: string) => {
+  switch (status) {
+    case '접수중':
+      return {
+        variant: 'outline' as const,
+        color: 'text-green-600 border-green-600',
+      }
+    case '접수마감':
+      return {
+        variant: 'outline' as const,
+        color: 'text-red-600 border-red-600',
+      }
+    case '접수대기':
+      return {
+        variant: 'outline' as const,
+        color: 'text-yellow-600 border-yellow-600',
+      }
+    default:
+      return {
+        variant: 'outline' as const,
+        color: 'text-gray-600',
+      }
   }
 }

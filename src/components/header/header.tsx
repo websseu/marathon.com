@@ -5,7 +5,7 @@ import { auth } from '@/auth'
 
 export default async function Header() {
   const session = await auth()
-  console.log(session)
+  // console.log(session)
 
   return (
     <header className='header__container'>

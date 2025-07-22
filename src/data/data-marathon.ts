@@ -134,7 +134,7 @@ export const marathonData = [
     description:
       '부산바다마라톤 2025 부산의 러닝 이벤트로, 많은 팬들과 러너들의 기대를 모으고 있습니다',
     startDate: '2025-10-26(일) 오전 8시 20분 출발',
-    regDate: '2025-07-16 선착순 마감',
+    regDate: '2025-07-16(수) 선착순 마감',
     location: '벡스코 야외광장',
     courses: ['10KM 50.000원', '5KM 40.000원'],
     scale: 15000,

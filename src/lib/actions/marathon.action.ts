@@ -76,11 +76,79 @@ export async function getAllMarathons() {
 }
 
 // 마라톤 대회 목록 조회(페이지, 검색)
+// export async function getAllMarathonsPage(
+//   page = 1,
+//   limit = 10,
+//   searchQuery?: string,
+//   status?: string
+// ) {
+//   try {
+//     await connectToDatabase()
+
+//     const skip = (page - 1) * limit
+
+//     // 검색 조건 설정
+//     const searchCondition: {
+//       isPublished: boolean
+//       $or?: Array<Record<string, { $regex: string; $options: string }>>
+//       status?: string
+//     } = { isPublished: true }
+
+//     if (searchQuery) {
+//       searchCondition.$or = [
+//         { name: { $regex: searchQuery, $options: 'i' } },
+//         { description: { $regex: searchQuery, $options: 'i' } },
+//         { location: { $regex: searchQuery, $options: 'i' } },
+//         { organizer: { $regex: searchQuery, $options: 'i' } },
+//       ]
+//     }
+
+//     if (status) {
+//       searchCondition.status = status
+//     }
+
+//     // 총 개수 조회
+//     const totalCount = await Marathon.countDocuments(searchCondition)
+
+//     // 페이지네이션된 데이터 조회
+//     const marathons = await Marathon.find(searchCondition)
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit)
+//       .lean()
+
+//     // 페이지네이션 정보 계산
+//     const totalPages = Math.ceil(totalCount / limit)
+//     const hasNextPage = page < totalPages
+//     const hasPrevPage = page > 1
+
+//     return {
+//       success: true,
+//       marathons: JSON.parse(JSON.stringify(marathons)),
+//       pagination: {
+//         currentPage: page,
+//         totalPages,
+//         totalCount,
+//         limit,
+//         hasNextPage,
+//         hasPrevPage,
+//       },
+//     }
+//   } catch (error) {
+//     console.error('마라톤 대회 조회 오류:', error)
+//     return {
+//       success: false,
+//       error: '마라톤 대회 데이터를 불러오는데 실패했습니다.',
+//     }
+//   }
+// }
+
 export async function getAllMarathonsPage(
   page = 1,
   limit = 10,
-  searchQuery?: string,
-  status?: string
+  search?: string,
+  status?: string,
+  month?: string
 ) {
   try {
     await connectToDatabase()
@@ -89,21 +157,33 @@ export async function getAllMarathonsPage(
 
     // 검색 조건 설정
     const searchCondition: {
-      isPublished: boolean
+      isPublished?: boolean
       $or?: Array<Record<string, { $regex: string; $options: string }>>
       status?: string
+      startDate?: { $gte: Date; $lte: Date }
     } = { isPublished: true }
 
-    if (searchQuery) {
+    // 검색어가 있고 빈 문자열이 아닐 때만 검색 조건 추가
+    if (search && search.trim() !== '') {
       searchCondition.$or = [
-        { name: { $regex: searchQuery, $options: 'i' } },
-        { description: { $regex: searchQuery, $options: 'i' } },
-        { location: { $regex: searchQuery, $options: 'i' } },
-        { organizer: { $regex: searchQuery, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
+        { location: { $regex: search, $options: 'i' } },
       ]
     }
 
-    if (status) {
+    // 월별 필터링 (해당 월의 접수중인 대회만)
+    if (month && month !== '') {
+      const monthNum = Number.parseInt(month)
+      const year = new Date().getFullYear()
+      const startOfMonth = new Date(year, monthNum - 1, 1)
+      const endOfMonth = new Date(year, monthNum, 0, 23, 59, 59)
+
+      searchCondition.startDate = {
+        $gte: startOfMonth,
+        $lte: endOfMonth,
+      }
+    } else if (status && status !== 'all') {
+      // 상태 필터가 있고 'all'이 아닐 때만 상태 조건 추가
       searchCondition.status = status
     }
 
@@ -139,6 +219,36 @@ export async function getAllMarathonsPage(
     return {
       success: false,
       error: '마라톤 대회 데이터를 불러오는데 실패했습니다.',
+    }
+  }
+}
+
+// 통계 데이터 조회 함수 추가
+export async function getMarathonStats() {
+  try {
+    await connectToDatabase()
+
+    const [total, accepting, closed, waiting] = await Promise.all([
+      Marathon.countDocuments({ isPublished: true }),
+      Marathon.countDocuments({ isPublished: true, status: '접수중' }),
+      Marathon.countDocuments({ isPublished: true, status: '접수마감' }),
+      Marathon.countDocuments({ isPublished: true, status: '접수대기' }),
+    ])
+
+    return {
+      success: true,
+      stats: {
+        total,
+        accepting,
+        closed,
+        waiting,
+      },
+    }
+  } catch (error) {
+    console.error('통계 데이터 조회 오류:', error)
+    return {
+      success: false,
+      error: '통계 데이터를 불러오는데 실패했습니다.',
     }
   }
 }

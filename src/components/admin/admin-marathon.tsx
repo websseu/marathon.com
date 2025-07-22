@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { formatDateTime } from '@/lib/utils'
+import { formatDateTime, getStatusBadge } from '@/lib/utils'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Badge } from '../ui/badge'
@@ -78,6 +78,7 @@ export default function AdminMarathon() {
   const [marathons, setMarathons] = useState<Marathon[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
   const [searchTerm, setSearchTerm] = useState('')
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
@@ -143,32 +144,6 @@ export default function AdminMarathon() {
     }, 1000)
     return () => clearTimeout(timer)
   }, [searchTerm])
-
-  // 상태별 배지 스타일
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case '접수중':
-        return {
-          variant: 'outline' as const,
-          color: 'text-green-600 border-green-600',
-        }
-      case '접수마감':
-        return {
-          variant: 'outline' as const,
-          color: 'text-red-600 border-red-600',
-        }
-      case '접수대기':
-        return {
-          variant: 'outline' as const,
-          color: 'text-yellow-600 border-yellow-600',
-        }
-      default:
-        return {
-          variant: 'outline' as const,
-          color: 'text-gray-600',
-        }
-    }
-  }
 
   // 상태별 통계 계산
   const getStatusCounts = () => {
