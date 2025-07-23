@@ -13,15 +13,17 @@ import {
   Heart,
   MapPin,
   Route,
-  Share2,
   Star,
   Trophy,
   Users,
+  Award,
 } from 'lucide-react'
+import ShareDialog from '@/components/dialog/dialog-share'
 
-export default async function MarathonDetailPage(props: { params: Promise<{ slug: string }> }) {
+export default async function MarathonDetailPage(props: {
+  params: Promise<{ slug: string }>
+}) {
   const { slug } = await props.params
-
   const result = await getMarathonBySlug(slug)
 
   if (!result.success) {
@@ -34,17 +36,29 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
     <>
       {/* 헤더 */}
       <div className='border-b sticky top-0 z-10 bg-white/80 backdrop-blur-md'>
-        <div className='flex items-center justify-between py-4'>
-          <Link href='/'>
+        <div className='text-center py-4'>
+          <Link
+            href='/'
+            className='w-10 h-10 rounded flex items-center justify-center absolute left-0 top-2.5 hover:bg-accent/50'
+          >
             <ArrowLeft className='h-5 w-5' />
           </Link>
-          <h1 className='text-lg font-nanum truncate mx-4 ml-10'>{marathon.name}</h1>
-          <div className='flex gap-1'>
-            <Button variant='ghost' size='icon' className='bg-gray-100'>
-              <Share2 className='h-5 w-5' />
-            </Button>
-            <Button variant='ghost' size='icon' className='bg-gray-100'>
-              <Heart className='h-5 w-5 transition-all duration-200' />
+          <h1 className='text-lg font-nanum font-bold truncate mx-4 ml-10'>
+            {marathon.name}
+          </h1>
+          <div className='absolute right-0 top-2.5 flex gap-1'>
+            <ShareDialog
+              url={`${process.env.NEXT_PUBLIC_APP_URL}/marathons/${marathon.slug}`}
+              title={marathon.name}
+              triggerClassName='hover:bg-blue-100/50 bg-blue-50/40'
+            />
+
+            <Button
+              variant='ghost'
+              size='icon'
+              className='hover:bg-blue-100/50 bg-blue-50/40'
+            >
+              <Award className='h-5 w-5 transition-all duration-200' />
             </Button>
           </div>
         </div>
@@ -64,7 +78,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
       {/* 대회 정보 */}
       <Card className='gap-2 mt-4'>
         <CardHeader>
-          <CardTitle className='font-gmarket text-blue-700 text-xl mb-4'>대회 정보</CardTitle>
+          <CardTitle className='font-gmarket text-blue-700 text-xl mb-4'>
+            대회 정보
+          </CardTitle>
         </CardHeader>
         <CardContent className='space-y-3'>
           {/* 대회명 */}
@@ -72,7 +88,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
             <Trophy className='h-4 w-4 text-yellow-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>대회명:</span>
-              <span className='ml-2 text-gray-900 break-words'>{marathon.name}</span>
+              <span className='ml-2 text-gray-900 break-words'>
+                {marathon.name}
+              </span>
             </div>
           </div>
 
@@ -96,7 +114,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
                 <Calendar className='h-4 w-4 text-orange-600 flex-shrink-0' />
                 <div className='min-w-0 flex-1'>
                   <span className='font-medium text-gray-700'>접수 기간:</span>
-                  <span className='ml-2 text-gray-900 break-words'>{marathon.regDate}</span>
+                  <span className='ml-2 text-gray-900 break-words'>
+                    {marathon.regDate}
+                  </span>
                 </div>
               </div>
             </>
@@ -109,7 +129,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
             <MapPin className='h-4 w-4 text-red-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>장소:</span>
-              <span className='ml-2 text-gray-900 break-words'>{marathon.location}</span>
+              <span className='ml-2 text-gray-900 break-words'>
+                {marathon.location}
+              </span>
             </div>
           </div>
 
@@ -120,7 +142,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
             <Users className='h-4 w-4 text-green-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>규모:</span>
-              <span className='ml-2 text-gray-900'>{marathon.scale.toLocaleString()}명</span>
+              <span className='ml-2 text-gray-900'>
+                {marathon.scale.toLocaleString()}명
+              </span>
             </div>
           </div>
 
@@ -131,7 +155,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
             <Building className='h-4 w-4 text-indigo-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>주최자:</span>
-              <span className='ml-2 text-gray-900 break-words'>{marathon.organizer}</span>
+              <span className='ml-2 text-gray-900 break-words'>
+                {marathon.organizer}
+              </span>
             </div>
           </div>
 
@@ -144,7 +170,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
                 <Heart className='h-4 w-4 text-pink-600 flex-shrink-0' />
                 <div className='min-w-0 flex-1'>
                   <span className='font-medium text-gray-700'>스폰서:</span>
-                  <span className='ml-2 text-gray-900 break-words'>{marathon.sponsor}</span>
+                  <span className='ml-2 text-gray-900 break-words'>
+                    {marathon.sponsor}
+                  </span>
                 </div>
               </div>
             </>
@@ -157,7 +185,9 @@ export default async function MarathonDetailPage(props: { params: Promise<{ slug
             <Route className='h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>코스:</span>
-              <span className='ml-2 text-gray-900 break-words'>{marathon.courses.join(', ')}</span>
+              <span className='ml-2 text-gray-900 break-words'>
+                {marathon.courses.join(', ')}
+              </span>
             </div>
           </div>
 

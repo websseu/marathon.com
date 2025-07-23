@@ -10,13 +10,7 @@ import {
   updateContactStatus,
 } from '@/lib/actions/contact.action'
 import { Loader2, Search, Clock, Eye, CheckCircle, Trash2 } from 'lucide-react'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -63,7 +57,6 @@ export default function AdminContacts() {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
 
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
   const [pagination, setPagination] = useState<PaginationInfo | null>(null)
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -72,6 +65,8 @@ export default function AdminContacts() {
 
   const [detailDialogOpen, setDetailDialogOpen] = useState(false)
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+
+  const pageSize = 10
 
   // 데이터 가져오기
   const fetchContacts = useCallback(async () => {
@@ -159,9 +154,7 @@ export default function AdminContacts() {
 
         // 목록에서 해당 문의사항의 상태 업데이트
         setContacts((prevContacts) =>
-          prevContacts.map((c) =>
-            c._id === contact._id ? { ...c, status: result.status! } : c
-          )
+          prevContacts.map((c) => (c._id === contact._id ? { ...c, status: result.status! } : c))
         )
       } else {
         toast.error('상태 변경 실패', {
@@ -247,9 +240,7 @@ export default function AdminContacts() {
           <CardTitle className='text-xl font-gmarket text-blue-700 flex items-center gap-2'>
             문의 관리({pagination?.totalCount ?? 0})
           </CardTitle>
-          <CardDescription>
-            문의를 관리하고 삭제 및 상태 변경을 할 수 있습니다.
-          </CardDescription>
+          <CardDescription>문의를 관리하고 삭제 및 상태 변경을 할 수 있습니다.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className='space-y-4'>
@@ -273,22 +264,13 @@ export default function AdminContacts() {
 
               {/* 상태 뱃지 영역 */}
               <div className='flex items-center gap-2 justify-end mt-2'>
-                <Badge
-                  variant='outline'
-                  className='text-orange-600 border-orange-600 h-6'
-                >
+                <Badge variant='outline' className='text-orange-600 border-orange-600 h-6'>
                   대기중: {statusCounts.waiting}
                 </Badge>
-                <Badge
-                  variant='outline'
-                  className='text-blue-600 border-blue-600 h-6'
-                >
+                <Badge variant='outline' className='text-blue-600 border-blue-600 h-6'>
                   확인완료: {statusCounts.confirmed}
                 </Badge>
-                <Badge
-                  variant='outline'
-                  className='text-green-600 border-green-600 h-6'
-                >
+                <Badge variant='outline' className='text-green-600 border-green-600 h-6'>
                   답장완료: {statusCounts.replied}
                 </Badge>
               </div>
@@ -302,11 +284,7 @@ export default function AdminContacts() {
             ) : error ? (
               <div className='bg-destructive/10 p-4 rounded-md text-destructive text-center'>
                 <p className='font-medium'>{error}</p>
-                <Button
-                  onClick={fetchContacts}
-                  variant='outline'
-                  className='mt-2'
-                >
+                <Button onClick={fetchContacts} variant='outline' className='mt-2'>
                   다시 시도
                 </Button>
               </div>
@@ -332,10 +310,7 @@ export default function AdminContacts() {
                           const StatusIcon = statusInfo.icon
 
                           return (
-                            <TableRow
-                              key={contact._id}
-                              className='text-muted-foreground'
-                            >
+                            <TableRow key={contact._id} className='text-muted-foreground'>
                               <TableCell className='text-center'>
                                 {(currentPage - 1) * pageSize + index + 1}
                               </TableCell>
@@ -360,9 +335,7 @@ export default function AdminContacts() {
                                   {contact.status}
                                 </Badge>
                               </TableCell>
-                              <TableCell>
-                                {formatDateTime(contact.createdAt)}
-                              </TableCell>
+                              <TableCell>{formatDateTime(contact.createdAt)}</TableCell>
                               <TableCell>
                                 <div className='flex items-center justify-center gap-1'>
                                   <Button
@@ -386,30 +359,21 @@ export default function AdminContacts() {
                               <TableCell className='mx-auto'>
                                 <Select
                                   value={contact.status}
-                                  onValueChange={(
-                                    value: '대기중' | '확인완료' | '답장완료'
-                                  ) => handleStatusChange(contact, value)}
+                                  onValueChange={(value: '대기중' | '확인완료' | '답장완료') =>
+                                    handleStatusChange(contact, value)
+                                  }
                                 >
                                   <SelectTrigger className='w-24 h-6 mx-auto text-xs'>
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem
-                                      value='대기중'
-                                      className='text-xs'
-                                    >
+                                    <SelectItem value='대기중' className='text-xs'>
                                       대기중
                                     </SelectItem>
-                                    <SelectItem
-                                      value='확인완료'
-                                      className='text-xs'
-                                    >
+                                    <SelectItem value='확인완료' className='text-xs'>
                                       확인완료
                                     </SelectItem>
-                                    <SelectItem
-                                      value='답장완료'
-                                      className='text-xs'
-                                    >
+                                    <SelectItem value='답장완료' className='text-xs'>
                                       답장완료
                                     </SelectItem>
                                   </SelectContent>
@@ -420,10 +384,7 @@ export default function AdminContacts() {
                         })
                       ) : (
                         <TableRow>
-                          <TableCell
-                            colSpan={7}
-                            className='text-center py-6 text-muted-foreground'
-                          >
+                          <TableCell colSpan={7} className='text-center py-6 text-muted-foreground'>
                             등록된 문의사항이 없습니다.
                           </TableCell>
                         </TableRow>
