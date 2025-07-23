@@ -1,10 +1,13 @@
 import React from 'react'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { getMarathonBySlug } from '@/lib/actions/marathon.action'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { notFound } from 'next/navigation'
+import { auth } from '@/auth'
+import { getFavoriteStatus } from '@/lib/actions/favorite.action'
+import ShareDialog from '@/components/dialog/dialog-share'
+import FavoriteButton from '@/components/ui/favorite-button'
 import {
   ArrowLeft,
   Building,
@@ -16,14 +19,16 @@ import {
   Star,
   Trophy,
   Users,
-  Award,
 } from 'lucide-react'
-import ShareDialog from '@/components/dialog/dialog-share'
 
-export default async function MarathonDetailPage(props: {
-  params: Promise<{ slug: string }>
-}) {
-  const { slug } = await props.params
+interface MarathonDetailPageProps {
+  params: Promise<{
+    slug: string
+  }>
+}
+
+export default async function MarathonDetailPage({ params }: MarathonDetailPageProps) {
+  const { slug } = await params
   const result = await getMarathonBySlug(slug)
 
   if (!result.success) {
@@ -31,6 +36,17 @@ export default async function MarathonDetailPage(props: {
   }
 
   const marathon = result.marathon
+
+  // 현재 로그인한 사용자 정보 가져오기
+  const session = await auth()
+  const userId = session?.user?.id
+
+  // 사용자의 즐겨찾기 상태 확인
+  let favoriteStatus = { isFavorited: false }
+  if (userId) {
+    const favoriteResult = await getFavoriteStatus(userId, marathon._id)
+    favoriteStatus = favoriteResult
+  }
 
   return (
     <>
@@ -43,9 +59,7 @@ export default async function MarathonDetailPage(props: {
           >
             <ArrowLeft className='h-5 w-5' />
           </Link>
-          <h1 className='text-lg font-nanum font-bold truncate mx-4 ml-10'>
-            {marathon.name}
-          </h1>
+          <h1 className='text-lg font-nanum font-bold truncate mx-4 ml-10'>{marathon.name}</h1>
           <div className='absolute right-0 top-2.5 flex gap-1'>
             <ShareDialog
               url={`${process.env.NEXT_PUBLIC_APP_URL}/marathons/${marathon.slug}`}
@@ -53,13 +67,11 @@ export default async function MarathonDetailPage(props: {
               triggerClassName='hover:bg-blue-100/50 bg-blue-50/40'
             />
 
-            <Button
-              variant='ghost'
-              size='icon'
-              className='hover:bg-blue-100/50 bg-blue-50/40'
-            >
-              <Award className='h-5 w-5 transition-all duration-200' />
-            </Button>
+            <FavoriteButton
+              marathonId={marathon._id}
+              userId={userId}
+              initialFavorited={favoriteStatus.isFavorited}
+            />
           </div>
         </div>
       </div>
@@ -78,9 +90,7 @@ export default async function MarathonDetailPage(props: {
       {/* 대회 정보 */}
       <Card className='gap-2 mt-4'>
         <CardHeader>
-          <CardTitle className='font-gmarket text-blue-700 text-xl mb-4'>
-            대회 정보
-          </CardTitle>
+          <CardTitle className='font-gmarket text-blue-700 text-xl mb-4'>대회 정보</CardTitle>
         </CardHeader>
         <CardContent className='space-y-3'>
           {/* 대회명 */}
@@ -88,9 +98,7 @@ export default async function MarathonDetailPage(props: {
             <Trophy className='h-4 w-4 text-yellow-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>대회명:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.name}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.name}</span>
             </div>
           </div>
 
@@ -114,9 +122,7 @@ export default async function MarathonDetailPage(props: {
                 <Calendar className='h-4 w-4 text-orange-600 flex-shrink-0' />
                 <div className='min-w-0 flex-1'>
                   <span className='font-medium text-gray-700'>접수 기간:</span>
-                  <span className='ml-2 text-gray-900 break-words'>
-                    {marathon.regDate}
-                  </span>
+                  <span className='ml-2 text-gray-900 break-words'>{marathon.regDate}</span>
                 </div>
               </div>
             </>
@@ -129,9 +135,7 @@ export default async function MarathonDetailPage(props: {
             <MapPin className='h-4 w-4 text-red-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>장소:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.location}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.location}</span>
             </div>
           </div>
 
@@ -142,9 +146,7 @@ export default async function MarathonDetailPage(props: {
             <Users className='h-4 w-4 text-green-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>규모:</span>
-              <span className='ml-2 text-gray-900'>
-                {marathon.scale.toLocaleString()}명
-              </span>
+              <span className='ml-2 text-gray-900'>{marathon.scale.toLocaleString()}명</span>
             </div>
           </div>
 
@@ -155,9 +157,7 @@ export default async function MarathonDetailPage(props: {
             <Building className='h-4 w-4 text-indigo-600 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>주최자:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.organizer}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.organizer}</span>
             </div>
           </div>
 
@@ -170,9 +170,7 @@ export default async function MarathonDetailPage(props: {
                 <Heart className='h-4 w-4 text-pink-600 flex-shrink-0' />
                 <div className='min-w-0 flex-1'>
                   <span className='font-medium text-gray-700'>스폰서:</span>
-                  <span className='ml-2 text-gray-900 break-words'>
-                    {marathon.sponsor}
-                  </span>
+                  <span className='ml-2 text-gray-900 break-words'>{marathon.sponsor}</span>
                 </div>
               </div>
             </>
@@ -185,9 +183,7 @@ export default async function MarathonDetailPage(props: {
             <Route className='h-4 w-4 text-orange-600 mt-0.5 flex-shrink-0' />
             <div className='min-w-0 flex-1'>
               <span className='font-medium text-gray-700'>코스:</span>
-              <span className='ml-2 text-gray-900 break-words'>
-                {marathon.courses.join(', ')}
-              </span>
+              <span className='ml-2 text-gray-900 break-words'>{marathon.courses.join(', ')}</span>
             </div>
           </div>
 

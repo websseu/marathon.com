@@ -74,22 +74,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // 사용자가 존재하고 비밀번호가 저장되어 있다면
         if (user && user.password) {
           // 입력된 비밀번호와 해시된 비밀번호 비교
-          const isMatch = await bcrypt.compare(
-            credentials.password as string,
-            user.password
-          )
+          const isMatch = await bcrypt.compare(credentials.password as string, user.password)
 
           // 비밀번호가 일치하면 사용자 정보를 반환
           if (isMatch) {
             return {
               id: user._id,
               name: user.name,
+              username: user.username,
               email: user.email,
               image: user.image,
               role: user.role,
               isActive: user.isActive,
               visitCount: user.visitCount,
-              username: user.username,
             }
           }
         }
@@ -110,6 +107,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!existingUser) {
           await User.create({
             name: user.name,
+            username: user.username,
             email: user.email,
             image: user.image,
             role: 'user',
@@ -127,11 +125,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id
         token.name = user.name
+        token.username = user.username
         token.email = user.email
         token.role = user.role
         token.image = user.image
         token.visitCount = user.visitCount
-        token.username = user.username
       } else if (token.id) {
         // DB에서 최신값 요청
         await connectToDatabase()
@@ -150,11 +148,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token) {
         session.user.id = token.id as string
         session.user.name = token.name as string
+        session.user.username = token.username as string
         session.user.email = token.email as string
         session.user.role = token.role as 'user' | 'admin'
         session.user.image = token.image as string
         session.user.visitCount = token.visitCount as number
-        session.user.username = token.username as string
       }
       // console.log('세션:', session)
       return session

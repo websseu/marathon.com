@@ -1,13 +1,4 @@
-import {
-  Home,
-  Newspaper,
-  Rat,
-  PocketKnife,
-  BellElectric,
-  Flower,
-  Pizza,
-  Siren,
-} from 'lucide-react'
+import { Home, Newspaper, Rat, PocketKnife, BellElectric, Flower, Pizza, Siren } from 'lucide-react'
 import { LucideIcon } from 'lucide-react'
 
 export interface MenuItem {
@@ -22,7 +13,7 @@ export const menuItems: MenuItem[] = [
   { icon: Home, label: '홈', href: '/', type: 'page' },
   { icon: Newspaper, label: '공지사항', href: '#notice', type: 'dialog' },
   { icon: Rat, label: '문의하기', href: '#contact', type: 'dialog' },
-  { icon: PocketKnife, label: '기록관리', type: 'page', href: '/record' },
+  { icon: PocketKnife, label: '기록관리', type: 'page', href: '/records' },
   { icon: BellElectric, label: '프로필', type: 'page', href: '/profile' },
 ]
 

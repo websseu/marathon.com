@@ -179,8 +179,7 @@ export async function completeSignup(data: IUserSignUpInput) {
 
     // username 중복 확인 및 숫자 추가 (최대 10번 시도)
     for (let i = 0; i < 10; i++) {
-      const usernameToCheck =
-        i === 0 ? username : `${username}-${String(i).padStart(3, '0')}`
+      const usernameToCheck = i === 0 ? username : `${username}-${String(i).padStart(3, '0')}`
 
       const usernameExists = await User.findOne({
         username: usernameToCheck,
@@ -396,8 +395,7 @@ export async function verifyPassword(data: IVerifyEmailInput) {
 // 비밀번호 찾기 3단계 : 비밀번호 재설정
 export async function resetPassword(data: IPasswordResetInput) {
   try {
-    const { email, verificationCode, newPassword } =
-      await PasswordResetSchema.parseAsync(data)
+    const { email, verificationCode, newPassword } = await PasswordResetSchema.parseAsync(data)
 
     await connectToDatabase()
 
@@ -443,6 +441,7 @@ export const SignInWithGithub = async () => {
   await signIn('github')
 }
 
+// --- 관리자 페이지 ---
 // 1. getAllUsers : 모든 회원 가져오기
 // 2. getAllUsersPage : 모든 회원 가져오기(페이지, 검색)
 // 3. deleteUser : 회원 삭제
@@ -477,11 +476,7 @@ export async function getAllUsers() {
 }
 
 // 모든 회원 가져오기(페이지, 검색)
-export async function getAllUsersPage(
-  page = 1,
-  limit = 10,
-  searchQuery?: string
-) {
+export async function getAllUsersPage(page = 1, limit = 10, searchQuery?: string) {
   try {
     await connectToDatabase()
 
@@ -615,9 +610,7 @@ export async function toggleUserStatus(userId: string) {
 
     return {
       success: true,
-      message: `사용자가 ${
-        updatedUser?.isActive ? '활성화' : '비활성화'
-      }되었습니다.`,
+      message: `사용자가 ${updatedUser?.isActive ? '활성화' : '비활성화'}되었습니다.`,
       isActive: updatedUser?.isActive,
     }
   } catch (error) {
@@ -670,9 +663,7 @@ export async function toggleUserRole(userId: string) {
 
     return {
       success: true,
-      message: `사용자 역할이 ${
-        newRole === 'admin' ? '관리자' : '일반 사용자'
-      }로 변경되었습니다.`,
+      message: `사용자 역할이 ${newRole === 'admin' ? '관리자' : '일반 사용자'}로 변경되었습니다.`,
       role: updatedUser?.role,
     }
   } catch (error) {
@@ -690,8 +681,8 @@ export async function updateUser(
   userId: string,
   updateData: {
     name?: string
-    email?: string
     username?: string
+    email?: string
     role?: string
     isActive?: boolean
     emailVerified?: boolean
@@ -756,12 +747,9 @@ export async function updateUser(
     if (updateData.email) user.email = updateData.email.toLowerCase()
     if (updateData.username) user.username = updateData.username
     if (updateData.role) user.role = updateData.role
-    if (typeof updateData.isActive === 'boolean')
-      user.isActive = updateData.isActive
-    if (typeof updateData.emailVerified === 'boolean')
-      user.emailVerified = updateData.emailVerified
-    if (typeof updateData.visitCount === 'number')
-      user.visitCount = updateData.visitCount
+    if (typeof updateData.isActive === 'boolean') user.isActive = updateData.isActive
+    if (typeof updateData.emailVerified === 'boolean') user.emailVerified = updateData.emailVerified
+    if (typeof updateData.visitCount === 'number') user.visitCount = updateData.visitCount
 
     await user.save()
 
@@ -791,5 +779,97 @@ export async function updateUser(
       success: false,
       error: '사용자 정보 수정 중 오류가 발생했습니다.',
     }
+  }
+}
+
+// --- 프로필 페이지 ---
+// 1. getUserById : 사용자 정보 조회
+// 2. updateUserProfile : 사용자 프로필 업데이트
+// 3. incrementUserVisitCount : 사용자 방문 횟수 증가
+
+// 사용자 정보 조회
+export async function getUserById(userId: string) {
+  try {
+    await connectToDatabase()
+
+    const user = await User.findById(userId).lean()
+
+    if (!user) {
+      return {
+        success: false,
+        error: '사용자를 찾을 수 없습니다.',
+      }
+    }
+
+    return {
+      success: true,
+      user: JSON.parse(JSON.stringify(user)),
+    }
+  } catch (error) {
+    console.error('사용자 정보 조회 오류:', error)
+    return {
+      success: false,
+      error: '사용자 정보를 불러오는데 실패했습니다.',
+    }
+  }
+}
+
+// 사용자 프로필 업데이트
+export async function updateUserProfile(
+  userId: string,
+  updateData: {
+    name?: string
+    username?: string
+    image?: string
+  }
+) {
+  try {
+    await connectToDatabase()
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        ...updateData,
+        updatedAt: new Date(),
+      },
+      { new: true }
+    ).lean()
+
+    if (!updatedUser) {
+      return {
+        success: false,
+        error: '사용자를 찾을 수 없습니다.',
+      }
+    }
+
+    revalidatePath('/profile')
+
+    return {
+      success: true,
+      message: '프로필이 성공적으로 업데이트되었습니다.',
+      user: JSON.parse(JSON.stringify(updatedUser)),
+    }
+  } catch (error) {
+    console.error('프로필 업데이트 오류:', error)
+    return {
+      success: false,
+      error: '프로필 업데이트 중 오류가 발생했습니다.',
+    }
+  }
+}
+
+// 사용자 방문 횟수 증가
+export async function incrementUserVisitCount(userId: string) {
+  try {
+    await connectToDatabase()
+
+    await User.findByIdAndUpdate(userId, {
+      $inc: { visitCount: 1 },
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error('방문 횟수 업데이트 오류:', error)
+    return { success: false }
   }
 }

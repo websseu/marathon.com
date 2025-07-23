@@ -22,6 +22,8 @@ npx shadcn@latest add card
 npx shadcn@latest add badge
 npx shadcn@latest add separator
 npx shadcn@latest add switch
+npx shadcn@latest add avatar
+
 
 
 npm i next-themes
@@ -38,7 +40,6 @@ npm i react-icons
 npx shadcn@latest add skeleton
 npx shadcn@latest add tooltip
 npx shadcn@latest add carousel
-npx shadcn@latest add avatar
 npx shadcn@latest add accordion
 
 npm i react-markdown --legacy-peer-deps
